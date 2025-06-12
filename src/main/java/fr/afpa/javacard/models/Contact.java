@@ -5,10 +5,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Contact {
+public class Contact implements Serializable {
 
     private final StringProperty nom = new SimpleStringProperty();
     private final StringProperty prenom = new SimpleStringProperty();
@@ -66,5 +67,41 @@ public class Contact {
 
     public void setAsModified() {
         this.dateModification.set(LocalDateTime.now());
+    }
+
+    public String getNom() {
+        return nom.get();
+    }
+
+    public String getPrenom() {
+        return prenom.get();
+    }
+
+    public String getEmail() {
+        return email.get();
+    }
+
+    public String getTelephone() {
+        return telephone.get();
+    }
+
+    public String getAdresse() {
+        return adresse.get();
+    }
+
+    public String getLienGitHub() {
+        return lienGitHub.get();
+    }
+
+    public LocalDateTime getDateCreation() {
+        return dateCreation.get();
+    }
+
+    public String getLienGitLab() {
+        return lienGitLab.get();
+    }
+
+    public LocalDateTime getDateModification() {
+        return dateModification.get();
     }
 }
