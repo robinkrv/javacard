@@ -12,15 +12,19 @@ public class CSVExportService implements ExportService {
     public boolean exporter(List<Contact> contacts, File file, ProgressCallback callback) {
         try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"))) {
             // En-tête CSV
-            writer.println("nom,prenom,email,telephone,adresse,github,gitlab");
+            writer.println("nom,prenom,email,telephone,adresse,lienCode");
 
             int total = contacts.size();
             for (int i = 0; i < total; i++) {
                 Contact c = contacts.get(i);
                 writer.printf("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"%n",
-                        echapper(c.getNom()), echapper(c.getPrenom()), echapper(c.getEmail()),
-                        echapper(c.getTelephone()), echapper(c.getAdresse()),
-                        echapper(c.getLienGitHub()), echapper(c.getLienGitLab())
+                        echapper(c.getNom()),
+                        echapper(c.getPrenom()),
+                        echapper(c.getEmail()),
+                        echapper(c.getTelPerso()),    // <-- PRO
+                        echapper(c.getTelPro()),      // <-- PRO
+                        echapper(c.getAdresse()),
+                        echapper(c.getLienCode())     // <-- PRO
                 );
                 if (callback != null) callback.updateProgress(5 + (90.0 * (i + 1) / total));
             }

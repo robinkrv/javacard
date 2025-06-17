@@ -67,16 +67,27 @@ public class ContactValidator {
             champsInvalides.add(ChampValidation.PRENOM);
         }
 
+        String genre = contact.genreProperty().get();
+        if (!isFieldValid(ChampValidation.GENRE, genre)) {
+            erreurs.add("Le genre est obligatoire (valeurs acceptées : Homme, Femme, Non-binaire)");
+            champsInvalides.add(ChampValidation.GENRE);
+        }
+
         String email = contact.emailProperty().get();
         if (!isFieldValid(ChampValidation.EMAIL, email)) {
             erreurs.add("Format d'email invalide");
             champsInvalides.add(ChampValidation.EMAIL);
         }
 
-        String telephone = contact.telephoneProperty().get();
-        if (!isFieldValid(ChampValidation.TELEPHONE, telephone)) {
-            erreurs.add("Format de téléphone invalide (format français attendu)");
-            champsInvalides.add(ChampValidation.TELEPHONE);
+        String telPerso = contact.telPersoProperty().get();
+        if (!isFieldValid(ChampValidation.TELEPHONE_PERSO, telPerso)) {
+            erreurs.add("Téléphone personnel obligatoire (format français attendu)");
+            champsInvalides.add(ChampValidation.TELEPHONE_PERSO);
+        }
+        String telPro = contact.telProProperty().get();
+        if (!isFieldValid(ChampValidation.TELEPHONE_PRO, telPro)) {
+            erreurs.add("Format de téléphone professionnel invalide (format français attendu)");
+            champsInvalides.add(ChampValidation.TELEPHONE_PRO);
         }
 
         String adresse = contact.adresseProperty().get();
@@ -85,16 +96,10 @@ public class ContactValidator {
             champsInvalides.add(ChampValidation.ADRESSE);
         }
 
-        String github = contact.lienGitHubProperty().get();
+        String github = contact.lienCodeProperty().get();
         if (!isFieldValid(ChampValidation.GITHUB, github)) {
             erreurs.add("Format URL GitHub invalide");
             champsInvalides.add(ChampValidation.GITHUB);
-        }
-
-        String gitlab = contact.lienGitLabProperty().get();
-        if (!isFieldValid(ChampValidation.GITLAB, gitlab)) {
-            erreurs.add("Format URL GitLab invalide");
-            champsInvalides.add(ChampValidation.GITLAB);
         }
 
         boolean valide = erreurs.isEmpty();
@@ -115,9 +120,13 @@ public class ContactValidator {
                 return validerNom(valeur);
             case PRENOM:
                 return validerPrenom(valeur);
+            case GENRE:
+                return validerGenre(valeur);
             case EMAIL:
                 return validerEmail(valeur);
-            case TELEPHONE:
+            case TELEPHONE_PERSO:
+                return validerTelephonePerso(valeur);
+            case TELEPHONE_PRO:
                 return validerTelephone(valeur);
             case ADRESSE:
                 return validerAdresse(valeur);
@@ -146,7 +155,7 @@ public class ContactValidator {
                 return valeur.trim().isEmpty() ? "Le prénom est obligatoire" : "Le prénom doit contenir au moins 2 caractères";
             case EMAIL:
                 return valeur.trim().isEmpty() ? "L'email ne peut pas être vide" : "Format d'email invalide";
-            case TELEPHONE:
+            case TELEPHONE_PERSO:
                 return valeur.trim().isEmpty() ? "Le téléphone ne peut pas être vide" : "Format de téléphone invalide (format français attendu)";
             case ADRESSE:
                 return valeur.trim().isEmpty() ? "L'adresse ne peut pas être vide" : "L'adresse est trop courte (minimum 10 caractères)";
@@ -167,12 +176,26 @@ public class ContactValidator {
         return prenom != null && !prenom.trim().isEmpty() && prenom.trim().length() >= 2;
     }
 
+    private static boolean validerGenre(String genre) {
+        if (genre == null) return false;
+        String val = genre.trim().toLowerCase();
+        return val.equals("homme") || val.equals("femme") || val.equals("non-binaire");
+    }
+
     private static boolean validerEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            return true;
+            return false;
         }
         return EMAIL_PATTERN.matcher(email.trim()).matches();
     }
+
+    private static boolean validerTelephonePerso(String telephone) {
+        if (telephone == null || telephone.trim().isEmpty()) {
+            return false; // Obligatoire !
+        }
+        return TELEPHONE_PATTERN.matcher(telephone.trim()).matches();
+    }
+
 
     private static boolean validerTelephone(String telephone) {
         if (telephone == null || telephone.trim().isEmpty()) {
@@ -183,7 +206,7 @@ public class ContactValidator {
 
     private static boolean validerAdresse(String adresse) {
         if (adresse == null || adresse.trim().isEmpty()) {
-            return true;
+            return false;
         }
         return adresse.trim().length() >= 10;
     }

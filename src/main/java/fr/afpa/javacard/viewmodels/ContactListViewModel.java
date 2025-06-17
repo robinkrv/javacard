@@ -16,6 +16,9 @@ public class ContactListViewModel {
     private final ObjectProperty<Contact> contactSelectionne = new SimpleObjectProperty<>();
     private final BooleanProperty contactSelectionneValide = new SimpleBooleanProperty(false);
 
+    public ContactService getContactService() {
+        return contactService;
+    }
     public ContactListViewModel(ContactService contactService) {
         this.contactService = contactService;
 

@@ -7,54 +7,67 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ListView?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="400.0" prefWidth="650.0"
+      xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fr.afpa.javacard.controllers.ExportController">
    <children>
-      <HBox alignment="CENTER">
+      <!-- Titre et icone -->
+      <HBox alignment="CENTER_LEFT">
          <children>
-            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="popupIcon" fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                <HBox.margin>
                   <Insets bottom="30.0" top="30.0" />
                </HBox.margin>
             </ImageView>
-            <Label text="Exporter un contact" />
+            <Label text="Exporter des contacts" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
          </children>
       </HBox>
-      <Label text="Choisissez le format :">
-         <VBox.margin>
-            <Insets left="80.0" top="20.0" />
-         </VBox.margin>
-      </Label>
-      <VBox alignment="CENTER">
+
+      <!-- Choix du format d'export -->
+      <HBox spacing="30.0" alignment="CENTER">
          <children>
-            <RadioButton mnemonicParsing="false" prefWidth="150.0" text=".CSV" VBox.vgrow="ALWAYS">
+            <VBox>
+               <children>
+                  <Label text="Choisissez le format :" style="-fx-font-weight: bold;"/>
+                  <RadioButton fx:id="csvRadio"  text=".CSV" />
+                  <RadioButton fx:id="jsonRadio" text=".JSON"/>
+                  <RadioButton fx:id="vcardRadio" text=".VCard"/>
+               </children>
                <VBox.margin>
-                  <Insets bottom="15.0" top="40.0" />
+                  <Insets left="10.0" top="20.0"/>
                </VBox.margin>
-            </RadioButton>
-            <RadioButton mnemonicParsing="false" prefWidth="150.0" text=".JSON">
-               <VBox.margin>
-                  <Insets bottom="15.0" />
-               </VBox.margin>
-            </RadioButton>
-            <RadioButton mnemonicParsing="false" prefWidth="150.0" text=".VCard" />
+            </VBox>
+            <Label text=" " prefWidth="100.0"/> <!-- Espacement -->
          </children>
-         <VBox.margin>
-            <Insets bottom="15.0" />
-         </VBox.margin>
-      </VBox>
-      <HBox alignment="CENTER">
+      </HBox>
+
+      <HBox spacing="30.0" alignment="CENTER" prefHeight="260.0">
          <children>
-            <Button mnemonicParsing="false" text="Exporter">
-               <HBox.margin>
-                  <Insets left="40.0" right="20.0" />
-               </HBox.margin>
-            </Button>
-            <Button mnemonicParsing="false" text="Annuler" />
+            <VBox>
+               <children>
+                  <Label text="Tous les contacts :" style="-fx-font-style: italic;"/>
+                  <ListView fx:id="contactsListView"  prefWidth="200.0" prefHeight="200.0" />
+               </children>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="À exporter :" style="-fx-font-style: italic;"/>
+                  <ListView fx:id="selectionnesListView" prefWidth="200.0" prefHeight="200.0"/>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+
+      <HBox spacing="30.0" alignment="CENTER">
+         <children>
+            <Button fx:id="exporterBtn" text="Exporter" />
+            <Button fx:id="annulerBtn" text="Annuler" />
          </children>
          <padding>
-            <Insets top="40.0" />
+            <Insets top="25.0" />
          </padding>
       </HBox>
    </children>

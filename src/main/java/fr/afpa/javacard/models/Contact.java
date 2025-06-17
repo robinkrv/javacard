@@ -1,53 +1,67 @@
 package fr.afpa.javacard.models;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
+import javafx.beans.property.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Contact implements Serializable {
 
     private final StringProperty nom = new SimpleStringProperty();
     private final StringProperty prenom = new SimpleStringProperty();
-    private final StringProperty email = new SimpleStringProperty();
-    private final StringProperty telephone = new SimpleStringProperty();
+    private final StringProperty genre = new SimpleStringProperty();
+    private final ObjectProperty<LocalDate> dateNaissance = new SimpleObjectProperty<>();
+    private final StringProperty pseudonyme = new SimpleStringProperty();
     private final StringProperty adresse = new SimpleStringProperty();
-    private final StringProperty lienGitHub = new SimpleStringProperty();
-    private final StringProperty lienGitLab = new SimpleStringProperty();
-    private final ObjectProperty<LocalDateTime> dateCreation = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalDateTime> dateModification = new SimpleObjectProperty<>();
+    private final StringProperty telPerso = new SimpleStringProperty();
+    private final StringProperty telPro = new SimpleStringProperty();
+    private final StringProperty email = new SimpleStringProperty();
+    private final StringProperty lienCode = new SimpleStringProperty();
 
-    public Contact() {
-        this.dateCreation.set(LocalDateTime.now());
-        this.dateModification.set(LocalDateTime.now());
-    }
+    public Contact() {}
 
     public Contact(String nom, String prenom) {
-        this();
         this.nom.set(nom);
         this.prenom.set(prenom);
     }
 
+    // Properties
     public StringProperty nomProperty() { return nom; }
     public StringProperty prenomProperty() { return prenom; }
-    public StringProperty emailProperty() { return email; }
-    public StringProperty telephoneProperty() { return telephone; }
+    public StringProperty genreProperty() { return genre; }
+    public ObjectProperty<LocalDate> dateNaissanceProperty() { return dateNaissance; }
+    public StringProperty pseudoProperty() { return pseudonyme; }
     public StringProperty adresseProperty() { return adresse; }
-    public StringProperty lienGitHubProperty() { return lienGitHub; }
-    public StringProperty lienGitLabProperty() { return lienGitLab; }
-    public ObjectProperty<LocalDateTime> dateCreationProperty() { return dateCreation; }
-    public ObjectProperty<LocalDateTime> dateModificationProperty() { return dateModification; }
+    public StringProperty telPersoProperty() { return telPerso; }
+    public StringProperty telProProperty() { return telPro; }
+    public StringProperty emailProperty() { return email; }
+    public StringProperty lienCodeProperty() { return lienCode; }
 
-    //Convert properties into String
+    // Getters/Setters
+    public String getNom() { return nom.get(); }
+    public void setNom(String nom) { this.nom.set(nom); }
+    public String getPrenom() { return prenom.get(); }
+    public void setPrenom(String prenom) { this.prenom.set(prenom); }
+    public String getGenre() { return genre.get(); }
+    public void setGenre(String genre) { this.genre.set(genre); }
+    public LocalDate getDateNaissance() { return dateNaissance.get(); }
+    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance.set(dateNaissance); }
+    public String getPseudonyme() { return pseudonyme.get(); }
+    public void setPseudonyme(String pseudo) { this.pseudonyme.set(pseudo); }
+    public String getAdresse() { return adresse.get(); }
+    public void setAdresse(String adresse) { this.adresse.set(adresse); }
+    public String getTelPerso() { return telPerso.get(); }
+    public void setTelPerso(String telPerso) { this.telPerso.set(telPerso); }
+    public String getTelPro() { return telPro.get(); }
+    public void setTelPro(String telPro) { this.telPro.set(telPro); }
+    public String getEmail() { return email.get(); }
+    public void setEmail(String email) { this.email.set(email); }
+    public String getLienCode() { return lienCode.get(); }
+    public void setLienCode(String lienCode) { this.lienCode.set(lienCode); }
+
     @Override
     public String toString() {
-        return String.format("%s %s",
-                nom.get() != null ? nom.get() : "",
-                prenom.get() != null ? prenom.get() : "").trim();
+        return (nom.get() != null ? nom.get() : "") + " " + (prenom.get() != null ? prenom.get() : "");
     }
 
     @Override
@@ -63,45 +77,5 @@ public class Contact implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(nom.get(), prenom.get(), email.get());
-    }
-
-    public void setAsModified() {
-        this.dateModification.set(LocalDateTime.now());
-    }
-
-    public String getNom() {
-        return nom.get();
-    }
-
-    public String getPrenom() {
-        return prenom.get();
-    }
-
-    public String getEmail() {
-        return email.get();
-    }
-
-    public String getTelephone() {
-        return telephone.get();
-    }
-
-    public String getAdresse() {
-        return adresse.get();
-    }
-
-    public String getLienGitHub() {
-        return lienGitHub.get();
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation.get();
-    }
-
-    public String getLienGitLab() {
-        return lienGitLab.get();
-    }
-
-    public LocalDateTime getDateModification() {
-        return dateModification.get();
     }
 }

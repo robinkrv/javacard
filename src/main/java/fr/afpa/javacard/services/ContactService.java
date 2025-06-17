@@ -1,52 +1,81 @@
 package fr.afpa.javacard.services;
 
 import fr.afpa.javacard.models.Contact;
+import fr.afpa.javacard.services.persistence.DataPersistenceService;
 import fr.afpa.javacard.services.validation.ContactValidator;
 import fr.afpa.javacard.services.validation.ValidationResult;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ContactService {
 
     private final ObservableList<Contact> contacts;
+    private final DataPersistenceService persistence = new DataPersistenceService();
 
     public ContactService() {
-        this.contacts = FXCollections.observableArrayList();
+        // 1. Charge si existe, sinon contacts de démo
+        List<Contact> charges = persistence.chargerContacts();
+        if (charges != null) {
+            contacts = FXCollections.observableArrayList(charges);
+        } else {
+            contacts = FXCollections.observableArrayList();
+
+            // Contacts de test (init seulement si fichier absent !)
+            Contact c1 = new Contact();
+            c1.setNom("Dupont");
+            c1.setPrenom("Alice");
+            c1.setGenre("Féminin");
+            c1.setDateNaissance(LocalDate.of(1990, 5, 14));
+            c1.setPseudonyme("Alicia");
+            c1.setAdresse("12 rue des Lilas, 75012 Paris");
+            c1.setTelPerso("0611223344");
+            c1.setTelPro("0144001122");
+            c1.setEmail("alice.dupont@email.com");
+
+            Contact c2 = new Contact();
+            c2.setNom("Martin");
+            c2.setPrenom("Pierre");
+            c2.setGenre("Masculin");
+            c2.setDateNaissance(LocalDate.of(1985, 2, 28));
+            c2.setPseudonyme("Pierrot");
+            c2.setAdresse("8 avenue Victor Hugo, 69002 Lyon");
+            c2.setTelPerso("0622334455");
+            c2.setTelPro("0457402301");
+            c2.setEmail("pierre.martin@email.com");
+
+            contacts.addAll(c1, c2);
+
+            // Sauvegarde immédiate de la démo pour ne plus les perdre à la fermeture !
+            persistence.sauvegarderContacts(contacts);
+        }
     }
+
 
     public ObservableList<Contact> getContacts() {
         return contacts;
     }
 
-    // ➕ Ajouter un contact
     public boolean ajouterContact(Contact contact) {
         try {
-            // 🛡️ Validation
             ValidationResult validation = ContactValidator.validateContact(contact);
             if (!validation.isValide()) {
-                throw new IllegalArgumentException(
-                        "Contact invalide:\n" + validation.getMessageErreur()
-                );
+                throw new IllegalArgumentException("Contact invalide:\n" + validation.getMessageErreur());
             }
 
-            // 🔍 Vérification unicité (nom + prénom)
             if (contactExiste(contact.nomProperty().get(), contact.prenomProperty().get())) {
-                throw new IllegalArgumentException(
-                        "Un contact avec ce nom et prénom existe déjà"
-                );
+                throw new IllegalArgumentException("Un contact avec ce nom et prénom existe déjà");
             }
 
-            // 📅 Définir la date de création
-            contact.dateCreationProperty().set(LocalDateTime.now());
-            contact.dateModificationProperty().set(LocalDateTime.now());
-
-            // ✅ Ajouter à la liste
             contacts.add(contact);
 
-            System.out.println("✅ Contact ajouté: " + contact.nomProperty().get() +
-                    " " + contact.prenomProperty().get());
+            // ✨ Sauvegarde à chaque ajout
+            persistence.sauvegarderContacts(contacts);
+
+            System.out.println("✅ Contact ajouté: " + contact.nomProperty().get() + " " + contact.prenomProperty().get());
             return true;
 
         } catch (Exception e) {
@@ -56,38 +85,15 @@ public class ContactService {
     }
 
     // ✏️ Modifier un contact
-    public boolean modifierContact(Contact contact) {
-        try {
-            // 🛡️ Validation
-            ValidationResult validation = ContactValidator.validateContact(contact);
-            if (!validation.isValide()) {
-                throw new IllegalArgumentException(
-                        "Contact invalide:\n" + validation.getMessageErreur()
-                );
-            }
-
-            // 🔍 Trouver le contact existant
-            Contact existant = rechercherContact(
-                    contact.nomProperty().get(),
-                    contact.prenomProperty().get()
-            );
-
-            if (existant == null) {
-                throw new IllegalArgumentException("Contact introuvable");
-            }
-
-            // 📅 Update date de modification
-            contact.dateModificationProperty().set(LocalDateTime.now());
-
-            // 🔄 Remplacer dans la liste
-            int index = contacts.indexOf(existant);
-            contacts.set(index, contact);
-
-            System.out.println("✅ Contact modifié: " + contact.nomProperty().get());
+    public boolean modifierContact(Contact ancien, Contact nouveau) {
+        int idx = contacts.indexOf(ancien);
+        if (idx != -1) {
+            contacts.set(idx, nouveau);
+            persistence.sauvegarderContacts(contacts);
+            System.out.println("✅ Contact modifié !");
             return true;
-
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la modification: " + e.getMessage());
+        } else {
+            System.err.println("❌ Contact à modifier non trouvé !");
             return false;
         }
     }
@@ -95,7 +101,11 @@ public class ContactService {
     public boolean supprimerContact(Contact contact) {
         try {
             boolean supprime = contacts.remove(contact);
+
             if (supprime) {
+                // ✨ Sauvegarde à chaque suppression
+                persistence.sauvegarderContacts(contacts);
+
                 System.out.println("✅ Contact supprimé: " + contact.nomProperty().get());
             } else {
                 System.out.println("⚠️ Contact non trouvé pour suppression");
@@ -117,7 +127,6 @@ public class ContactService {
                 .orElse(null);
     }
 
-    // 🔎 Rechercher par critère (nom, prénom, email)
     public ObservableList<Contact> rechercherParCritere(String critere) {
         if (critere == null || critere.trim().isEmpty()) {
             return FXCollections.observableArrayList(contacts);
@@ -149,6 +158,7 @@ public class ContactService {
     // 🧹 Nettoyer tous les contacts
     public void viderContacts() {
         contacts.clear();
+        persistence.sauvegarderContacts(contacts);
         System.out.println("🧹 Tous les contacts ont été supprimés");
     }
 
@@ -157,4 +167,3 @@ public class ContactService {
         return FXCollections.observableArrayList(contacts);
     }
 }
-

@@ -20,10 +20,13 @@ public class VCardExportService implements ExportService {
                 writer.println("FN:" + c.getPrenom() + " " + c.getNom());
                 writer.println("N:" + c.getNom() + ";" + c.getPrenom() + ";;;");
                 if (!c.getEmail().isEmpty()) writer.println("EMAIL:" + c.getEmail());
-                if (!c.getTelephone().isEmpty()) writer.println("TEL:" + c.getTelephone());
+                if (c.getTelPerso() != null && !c.getTelPerso().isEmpty())
+                    writer.println("TEL;TYPE=HOME:" + c.getTelPerso());
+                if (c.getTelPro() != null && !c.getTelPro().isEmpty())
+                    writer.println("TEL;TYPE=WORK:" + c.getTelPro());
                 if (!c.getAdresse().isEmpty()) writer.println("ADR:;;" + c.getAdresse() + ";;;;");
-                if (!c.getLienGitHub().isEmpty()) writer.println("URL:GitHub:" + c.getLienGitHub());
-                if (!c.getLienGitLab().isEmpty()) writer.println("URL:GitLab:" + c.getLienGitLab());
+                if (c.getLienCode() != null && !c.getLienCode().isEmpty())
+                    writer.println("URL:" + c.getLienCode());
                 writer.println("END:VCARD");
                 if (i < total - 1) writer.println(); // ligne vide entre chaque contact
 
