@@ -14,22 +14,14 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="fr.afpa.javacard.controllers.ExportController">
    <children>
-      <!-- Titre et icone -->
-      <HBox alignment="CENTER_LEFT">
-         <children>
-            <ImageView fx:id="popupIcon" fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
-               <HBox.margin>
-                  <Insets bottom="30.0" top="30.0" />
-               </HBox.margin>
-            </ImageView>
-            <Label text="Exporter des contacts" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-         </children>
-      </HBox>
 
       <!-- Choix du format d'export -->
       <HBox spacing="30.0" alignment="CENTER">
+         <padding>
+            <Insets top="20" bottom="20"/>
+         </padding>
          <children>
-            <VBox>
+            <VBox spacing="15.0">
                <children>
                   <Label text="Choisissez le format :" style="-fx-font-weight: bold;"/>
                   <RadioButton fx:id="csvRadio"  text=".CSV" />
@@ -37,7 +29,7 @@
                   <RadioButton fx:id="vcardRadio" text=".VCard"/>
                </children>
                <VBox.margin>
-                  <Insets left="10.0" top="20.0"/>
+                  <Insets left="10.0" top="20.0" bottom="20"/>
                </VBox.margin>
             </VBox>
             <Label text=" " prefWidth="100.0"/> <!-- Espacement -->
@@ -67,7 +59,7 @@
             <Button fx:id="annulerBtn" text="Annuler" />
          </children>
          <padding>
-            <Insets top="25.0" />
+            <Insets top="25.0" bottom="25.0" />
          </padding>
       </HBox>
    </children>

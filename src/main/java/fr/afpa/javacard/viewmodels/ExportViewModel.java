@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ExportViewModel {
     private final ContactService contactService;
-    private final ExportService exportService;
+    private ExportService exportService;
 
     private final ObservableList<Contact> contactsDisponibles;
     private final ObservableList<Contact> contactsSelectionnes = FXCollections.observableArrayList();
@@ -111,4 +111,13 @@ public class ExportViewModel {
 
     public void setFormatSelectionne(String format) { this.formatSelectionne.set(format); }
     public String getMessageStatut() { return messageStatut.get(); }
+
+    public ExportService getExportService() {
+        return exportService;
+    }
+
+    public void setExportService(ExportService exportService) {
+        this.exportService = exportService;
+    }
+
 }

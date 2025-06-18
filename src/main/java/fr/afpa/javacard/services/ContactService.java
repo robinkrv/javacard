@@ -17,14 +17,13 @@ public class ContactService {
     private final DataPersistenceService persistence = new DataPersistenceService();
 
     public ContactService() {
-        // 1. Charge si existe, sinon contacts de démo
         List<Contact> charges = persistence.chargerContacts();
-        if (charges != null) {
+        if (charges != null && !charges.isEmpty()) {
             contacts = FXCollections.observableArrayList(charges);
         } else {
             contacts = FXCollections.observableArrayList();
 
-            // Contacts de test (init seulement si fichier absent !)
+            // Contacts de démo si fichier inexistant ou vide
             Contact c1 = new Contact();
             c1.setNom("Dupont");
             c1.setPrenom("Alice");
@@ -49,11 +48,10 @@ public class ContactService {
 
             contacts.addAll(c1, c2);
 
-            // Sauvegarde immédiate de la démo pour ne plus les perdre à la fermeture !
+            // Sauvegarde immédiate pour la suite
             persistence.sauvegarderContacts(contacts);
         }
     }
-
 
     public ObservableList<Contact> getContacts() {
         return contacts;
@@ -71,58 +69,40 @@ public class ContactService {
             }
 
             contacts.add(contact);
-
-            // ✨ Sauvegarde à chaque ajout
-            persistence.sauvegarderContacts(contacts);
-
-            System.out.println("✅ Contact ajouté: " + contact.nomProperty().get() + " " + contact.prenomProperty().get());
+            persistence.sauvegarderContacts(contacts); // Sauvegarde à chaque ajout
             return true;
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur lors de l'ajout: " + e.getMessage());
+            System.err.println("Erreur lors de l'ajout: " + e.getMessage());
             return false;
         }
     }
 
-    // ✏️ Modifier un contact
     public boolean modifierContact(Contact ancien, Contact nouveau) {
         int idx = contacts.indexOf(ancien);
         if (idx != -1) {
             contacts.set(idx, nouveau);
-            persistence.sauvegarderContacts(contacts);
-            System.out.println("✅ Contact modifié !");
+            persistence.sauvegarderContacts(contacts); // Idem modif
             return true;
-        } else {
-            System.err.println("❌ Contact à modifier non trouvé !");
-            return false;
         }
+        System.err.println("Contact à modifier non trouvé !");
+        return false;
     }
 
     public boolean supprimerContact(Contact contact) {
-        try {
-            boolean supprime = contacts.remove(contact);
-
-            if (supprime) {
-                // ✨ Sauvegarde à chaque suppression
-                persistence.sauvegarderContacts(contacts);
-
-                System.out.println("✅ Contact supprimé: " + contact.nomProperty().get());
-            } else {
-                System.out.println("⚠️ Contact non trouvé pour suppression");
-            }
-            return supprime;
-
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la suppression: " + e.getMessage());
-            return false;
+        boolean supprime = contacts.remove(contact);
+        if (supprime) {
+            persistence.sauvegarderContacts(contacts); // Idem suppression
+            return true;
         }
+        System.out.println("Contact non trouvé pour suppression");
+        return false;
     }
 
-    // 🔍 Rechercher un contact par nom et prénom
     public Contact rechercherContact(String nom, String prenom) {
         return contacts.stream()
-                .filter(c -> c.nomProperty().get().equalsIgnoreCase(nom) &&
-                        c.prenomProperty().get().equalsIgnoreCase(prenom))
+                .filter(c -> c.nomProperty().get().equalsIgnoreCase(nom)
+                        && c.prenomProperty().get().equalsIgnoreCase(prenom))
                 .findFirst()
                 .orElse(null);
     }
@@ -131,38 +111,31 @@ public class ContactService {
         if (critere == null || critere.trim().isEmpty()) {
             return FXCollections.observableArrayList(contacts);
         }
-
         String critereMin = critere.toLowerCase().trim();
-
         return contacts.stream()
                 .filter(contact ->
-                        contact.nomProperty().get().toLowerCase().contains(critereMin) ||
-                                contact.prenomProperty().get().toLowerCase().contains(critereMin) ||
-                                (contact.emailProperty().get() != null &&
-                                        contact.emailProperty().get().toLowerCase().contains(critereMin))
-                )
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                        contact.nomProperty().get().toLowerCase().contains(critereMin)
+                                || contact.prenomProperty().get().toLowerCase().contains(critereMin)
+                                || (contact.emailProperty().get() != null && contact.emailProperty().get().toLowerCase().contains(critereMin))
+                ).collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+
+    private boolean contactExiste(String nom, String prenom) {
+        return contacts.stream()
+                .anyMatch(c -> c.nomProperty().get().equalsIgnoreCase(nom)
+                        && c.prenomProperty().get().equalsIgnoreCase(prenom));
+    }
+
+    public void viderContacts() {
+        contacts.clear();
+        persistence.sauvegarderContacts(contacts);
     }
 
     public int getNombreContacts() {
         return contacts.size();
     }
 
-    // 🔍 Vérifier si un contact existe
-    private boolean contactExiste(String nom, String prenom) {
-        return contacts.stream()
-                .anyMatch(c -> c.nomProperty().get().equalsIgnoreCase(nom) &&
-                        c.prenomProperty().get().equalsIgnoreCase(prenom));
-    }
-
-    // 🧹 Nettoyer tous les contacts
-    public void viderContacts() {
-        contacts.clear();
-        persistence.sauvegarderContacts(contacts);
-        System.out.println("🧹 Tous les contacts ont été supprimés");
-    }
-
-    // 📋 Obtenir une copie des contacts (pour sécurité)
+    // Pour extractions rapides
     public ObservableList<Contact> getContactsCopie() {
         return FXCollections.observableArrayList(contacts);
     }

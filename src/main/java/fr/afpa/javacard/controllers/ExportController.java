@@ -104,12 +104,8 @@ public class ExportController {
             alert.showAndWait();
             return;
         }
-        // Changement dynamique de service dans le viewmodel
-        exportViewModel = new ExportViewModel(new ContactService(), selectedService);
+        exportViewModel.setExportService(selectedService);
 
-        // On rebinde les listes (solution rapide)
-        contactsListView.setItems(exportViewModel.getContactsDisponibles());
-        selectionnesListView.setItems(exportViewModel.getContactsSelectionnes());
 
         FileChooser fc = new FileChooser();
         fc.setTitle("Choisissez le fichier d’export");

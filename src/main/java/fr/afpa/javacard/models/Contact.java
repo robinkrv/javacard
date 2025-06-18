@@ -1,5 +1,6 @@
 package fr.afpa.javacard.models;
 
+import fr.afpa.javacard.dto.ContactDTO;
 import javafx.beans.property.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -78,4 +79,35 @@ public class Contact implements Serializable {
     public int hashCode() {
         return Objects.hash(nom.get(), prenom.get(), email.get());
     }
+
+    public ContactDTO toDTO() {
+        ContactDTO dto = new ContactDTO();
+        dto.setNom(getNom());
+        dto.setPrenom(getPrenom());
+        dto.setGenre(getGenre());
+        dto.setDateNaissance(getDateNaissance());
+        dto.setPseudonyme(getPseudonyme());
+        dto.setAdresse(getAdresse());
+        dto.setTelPerso(getTelPerso());
+        dto.setTelPro(getTelPro());
+        dto.setEmail(getEmail());
+        dto.setLienCode(getLienCode());
+        return dto;
+    }
+
+    public static Contact fromDTO(ContactDTO dto) {
+        Contact c = new Contact();
+        c.setNom(dto.getNom());
+        c.setPrenom(dto.getPrenom());
+        c.setGenre(dto.getGenre());
+        c.setDateNaissance(dto.getDateNaissance());
+        c.setPseudonyme(dto.getPseudonyme());
+        c.setAdresse(dto.getAdresse());
+        c.setTelPerso(dto.getTelPerso());
+        c.setTelPro(dto.getTelPro());
+        c.setEmail(dto.getEmail());
+        c.setLienCode(dto.getLienCode());
+        return c;
+    }
 }
+
